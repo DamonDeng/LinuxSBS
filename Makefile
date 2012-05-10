@@ -1,27 +1,22 @@
+bootdir:=arch/x86/boot/
 
-
-buildAll:copyintoDisk
+bzImage:$(bootdir)setup.bin $(bootdir)vmlinux.bin
+	$(bootdir)/tools/build $(bootdir)setup.bin $(bootdir)vmlinux.bin CURRENT > $(bootdir)bzImage
 
 run:
-	qemu -fda ./harddisk.img
+	qemu -kernel $(bootdir)bzImage
 
-copyintoDisk:createDisk copyobject
-	dd status=noxfer conv=notrunc if=arch/x86/boot/header.bin of=harddisk.img
+$(bootdir)setup.bin:$(bootdir)setup.elf
+	objcopy -O binary $(bootdir)setup.elf $(bootdir)setup.bin
 
-copyobject:linkfile
-	objcopy  -O binary -R .note -R .comment -S arch/x86/boot/header arch/x86/boot/header.bin
+$(bootdir)setup.elf: $(bootdir)header.o $(bootdir)main.o
+	ld -m elf_i386 -T $(bootdir)setup.ld $(bootdir)header.o $(bootdir)main.o -o $(bootdir)setup.elf
 
-createDisk:
-	qemu-img create -f raw harddisk.img 10M
+$(bootdir)header.o: $(bootdir)header.S
+	gcc -nostdinc -Iinclude -include include/generated/autoconf.h -D__KERNEL__ -g -Os -D_SETUP -D__KERNEL__ -DDISABLE_BRANCH_PROFILING -Wall -Wstrict-prototypes -march=i386 -mregparm=3 -include ./code16gcc.h -fno-strict-aliasing -fomit-frame-pointer  -ffreestanding  -fno-toplevel-reorder  -fno-stack-protector  -mpreferred-stack-boundary=2  -m32 -D__ASSEMBLY__   -DSVGA_MODE=NORMAL_VGA -Iarch/x86/boot  -c -o $(bootdir)header.o $(bootdir)header.S
 
-linkfile:buildfile
-	ld -T arch/x86/boot/header.ld arch/x86/boot/header.o -o arch/x86/boot/header
-
-buildfile:arch/x86/boot/header.S
-	gcc -nostdinc -isystem -D__KERNEL__ -m32 -D__KERNEL__  -O2 -fno-strict-aliasing -fPIC -DDISABLE_BRANCH_PROFILING -march=i386 -ffreestanding -fno-stack-protector -D__ASSEMBLY__ -c -o arch/x86/boot/header.o arch/x86/boot/header.S
+$(bootdir)main.o: $(bootdir)main.c
+	gcc -c -o $(bootdir)main.o $(bootdir)main.c
 
 clean:
-	rm harddisk.img arch/x86/boot/header.bin arch/x86/boot/header.o arch/x86/boot/header
-
-
-
+	rm $(bootdir)main.o $(bootdir)header.o $(bootdir)setup.elf $(bootdir)setup.bin $(bootdir)bzImage

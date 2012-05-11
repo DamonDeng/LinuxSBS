@@ -2,7 +2,13 @@ Copy Linux step by step.
 
 In order to learn Linux kernel, I decided to copy Linux source code step by step. And try to build and run it at each step, so that I can understand each part of Linux kernel.
 
-It is 0.0.4 version
+It is 0.0.5 version
+
+#--------0.0.5
+Try to call set_bios_mode and init_heap, then call detect_memory.
+Code related to set_bios_mode and init_heap is added in the main.c file.
+For calling detect_memory function, we add memory.c in the arch/x86/boot dir.
+
 
 #--------0.0.4
 Try to copy boot parameters from boot loader.

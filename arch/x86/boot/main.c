@@ -17,6 +17,9 @@
 
 struct boot_params boot_params __attribute__((aligned(16)));
 
+char *HEAP = _end;
+char *heap_end = _end;
+
 static void copy_boot_params(void)
 {
         struct old_cmdline {
@@ -47,6 +50,37 @@ static void copy_boot_params(void)
         }
 }
 
+static void set_bios_mode(void)
+{
+#ifdef CONFIG_X86_64
+        struct biosregs ireg;
+
+        initregs(&ireg);
+        ireg.ax = 0xec00;
+        ireg.bx = 2;
+        intcall(0x15, &ireg, NULL);
+#endif
+}
+
+
+static void init_heap(void)
+{
+        char *stack_end;
+
+        if (boot_params.hdr.loadflags & CAN_USE_HEAP) {
+                asm("leal %P1(%%esp),%0"
+                    : "=r" (stack_end) : "i" (-STACK_SIZE));
+
+                heap_end = (char *)
+                        ((size_t)boot_params.hdr.heap_end_ptr + 0x200);
+                if (heap_end > stack_end)
+                        heap_end = stack_end;
+        } else {
+                /* Boot protocol 2.00 only, no heap available */
+                puts("  WARNING: Ancient bootloader, some functionality "
+                     "may be limited!\n");
+        }
+}
 
 
 void main(void)
@@ -58,6 +92,17 @@ void main(void)
 	puts("-----------Seperator------------\n");
         copy_boot_params();
         puts("Successfully copied boot parameters. \n");
+
+	puts("-----------Seperator------------\n");
+        
+        init_heap();
+        puts("successfully init heap.\n");
+
+        set_bios_mode();
+	puts("successfully set bios mode.\n");
+        
+        detect_memory();
+        puts("successfully detect_memory.\n");
 
 
 	int i;

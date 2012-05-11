@@ -9,13 +9,13 @@ bzImage:$(bootdir)setup.bin $(bootdir)vmlinux.bin
 	$(bootdir)/tools/build $(bootdir)setup.bin $(bootdir)vmlinux.bin CURRENT > $(bootdir)bzImage
 
 run:
-	qemu -kernel $(bootdir)bzImage
+	qemu -hda ./linux-0.2.img -kernel $(bootdir)bzImage -append root=/dev/sda
 
 $(bootdir)setup.bin:$(bootdir)setup.elf
 	objcopy -O binary $(bootdir)setup.elf $(bootdir)setup.bin
 
-$(bootdir)setup.elf: $(bootdir)header.o $(bootdir)main.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)memory.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o  
-	ld -m elf_i386 -T $(bootdir)setup.ld $(bootdir)header.o $(bootdir)main.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)memory.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o -o $(bootdir)setup.elf
+$(bootdir)setup.elf: $(bootdir)header.o $(bootdir)main.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)memory.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o $(bootdir)pmjump.o $(bootdir)a20.o $(bootdir)pm.o 
+	ld -m elf_i386 -T $(bootdir)setup.ld $(bootdir)header.o $(bootdir)main.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)memory.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o $(bootdir)pmjump.o $(bootdir)a20.o $(bootdir)pm.o -o $(bootdir)setup.elf
 
 $(bootdir)header.o: $(bootdir)header.S
 	gcc -nostdinc -Iinclude -include include/generated/autoconf.h -D__KERNEL__ -g -Os -D_SETUP -D__KERNEL__ -DDISABLE_BRANCH_PROFILING -Wall -Wstrict-prototypes -march=i386 -mregparm=3 -include ./code16gcc.h -fno-strict-aliasing -fomit-frame-pointer  -ffreestanding  -fno-toplevel-reorder  -fno-stack-protector  -mpreferred-stack-boundary=2  -m32 -D__ASSEMBLY__   -DSVGA_MODE=NORMAL_VGA -Iarch/x86/boot  -c -o $(bootdir)header.o $(bootdir)header.S
@@ -79,9 +79,19 @@ $(bootdir)video-bios.o: $(bootdir)video-bios.c
 	gcc $(gcc_c_flags) -o $(bootdir)video-bios.o $(bootdir)video-bios.c
 
 
+$(bootdir)pm.o: $(bootdir)pm.c
+	gcc $(gcc_c_flags) -o $(bootdir)pm.o $(bootdir)pm.c
+
+$(bootdir)a20.o: $(bootdir)a20.c
+	gcc $(gcc_c_flags) -o $(bootdir)a20.o $(bootdir)a20.c
+
+$(bootdir)pmjump.o: $(bootdir)pmjump.S
+	gcc $(gcc_as_flags) -o $(bootdir)pmjump.o $(bootdir)pmjump.S
+
+
 
 
 
 
 clean:
-	rm $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)memory.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)main.o $(bootdir)header.o $(bootdir)setup.elf $(bootdir)setup.bin $(bootdir)bzImage
+	rm $(bootdir)pmjump.o $(bootdir)a20.o $(bootdir)pm.o $(bootdir)edd.o $(bootdir)cmdline.o $(bootdir)video.o $(bootdir)video-vesa.o $(bootdir)video-vga.o $(bootdir)video-mode.o $(bootdir)video-bios.o $(bootdir)apm.o $(bootdir)cpu.o $(bootdir)printf.o $(bootdir)cpucheck.o $(bootdir)string.o $(bootdir)mca.o $(bootdir)copy.o $(bootdir)memory.o $(bootdir)tty.o $(bootdir)bioscall.o $(bootdir)regs.o $(bootdir)main.o $(bootdir)header.o $(bootdir)setup.elf $(bootdir)setup.bin $(bootdir)bzImage

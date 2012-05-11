@@ -146,6 +146,11 @@ void main(void)
 
 	set_video();
 	printf("successfully set video. \n");
+	puts("-----------Seperator------------\n");
+        
+	printf("before switching to protected mode. \n");
+	go_to_protected_mode();
+	printf("Switching to protected mode.\n");
 
 	int i;
 	i=10000;

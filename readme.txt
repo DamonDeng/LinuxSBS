@@ -2,7 +2,12 @@ Copy Linux step by step.
 
 In order to learn Linux kernel, I decided to copy Linux source code step by step. And try to build and run it at each step, so that I can understand each part of Linux kernel.
 
-It is 0.0.7 version
+It is version 0.0.8
+
+#--------0.0.8
+Try to go to protected mode.
+In order to call go_to_protected_mode(), pm.c a20.c pmjump.S was added in the arch/x86/boot dir.
+And, in order to run linux kernel , copy linux-0.2.img as hardisk image file.
 
 #--------0.0.7
 Try to call query_edd() and set_video().

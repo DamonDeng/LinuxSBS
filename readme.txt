@@ -2,7 +2,12 @@ Copy Linux step by step.
 
 In order to learn Linux kernel, I decided to copy Linux source code step by step. And try to build and run it at each step, so that I can understand each part of Linux kernel.
 
-It is 0.0.3 version
+It is 0.0.4 version
+
+#--------0.0.4
+Try to copy boot parameters from boot loader.
+It is added in the main.c file.
+
 #--------0.0.3
 Now main.c is starting to work, print some messages with c program.
 Inorder to call the function puts(), we add tty.c regs.c bioscall.S

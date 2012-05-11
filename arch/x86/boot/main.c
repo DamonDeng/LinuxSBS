@@ -82,6 +82,27 @@ static void init_heap(void)
         }
 }
 
+static void query_ist(void)
+{
+        struct biosregs ireg, oreg;
+
+        /* Some older BIOSes apparently crash on this call, so filter
+           it from machines too old to have SpeedStep at all. */
+        if (cpu.level < 6)
+                return;
+
+        initregs(&ireg);
+        ireg.ax  = 0xe980;       /* IST Support */
+        ireg.edx = 0x47534943;   /* Request value */
+        intcall(0x15, &ireg, &oreg);
+
+        boot_params.ist_info.signature  = oreg.eax;
+        boot_params.ist_info.command    = oreg.ebx;
+        boot_params.ist_info.event      = oreg.ecx;
+        boot_params.ist_info.perf_level = oreg.edx;
+}
+
+
 
 void main(void)
 {
@@ -103,6 +124,23 @@ void main(void)
         
         detect_memory();
         puts("successfully detect_memory.\n");
+	puts("-----------Seperator------------\n");
+        
+	query_mca();
+	puts("successfully query mca. \n");
+	
+        query_ist();
+
+        printf("successfully query ist.\n");
+
+        query_apm_bios();
+
+        printf("successfully query apm.\n");
+
+        printf("by the way, we can use printf function now.\n");
+        printf("testing printf, it is an integer:%d. \n",10);
+	puts("-----------Seperator------------\n");
+        
 
 
 	int i;

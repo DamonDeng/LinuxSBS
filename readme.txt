@@ -2,7 +2,12 @@ Copy Linux step by step.
 
 In order to learn Linux kernel, I decided to copy Linux source code step by step. And try to build and run it at each step, so that I can understand each part of Linux kernel.
 
-It is 0.0.5 version
+It is 0.0.6 version
+
+#--------0.0.6
+Try to call query_mca() query_ist() query_apm_bios().
+In arch/x86/boot dir, we added files: mca.c copy.S apm.c cpu.c printf.c cpucheck.c string.c
+
 
 #--------0.0.5
 Try to call set_bios_mode and init_heap, then call detect_memory.

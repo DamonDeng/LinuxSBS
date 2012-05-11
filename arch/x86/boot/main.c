@@ -141,7 +141,11 @@ void main(void)
         printf("testing printf, it is an integer:%d. \n",10);
 	puts("-----------Seperator------------\n");
         
+	query_edd();
+	printf("successfully query edd. \n");
 
+	set_video();
+	printf("successfully set video. \n");
 
 	int i;
 	i=10000;

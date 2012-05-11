@@ -13,10 +13,13 @@
  * useless main.c just making the file large enough for the tool build
  */
 
-
+#include "boot.h"
 
 void main(void)
 {
+
+	puts("-----------Seperator------------\n");
+	puts("It is in my main function now.\n");
 
 	int i;
 	i=10000;

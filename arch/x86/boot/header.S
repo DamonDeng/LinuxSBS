@@ -304,12 +304,15 @@ start_of_setup:
 system_start_msg_loop:
         lodsb
         andb    %al, %al
-        jz      die
+        jz      callmain
         movb    $0xe, %ah
         movw    $7, %bx
         int     $0x10
         jmp     system_start_msg_loop
-
+callmain:
+	calll main
+#should not return, if return, go to die
+	jmp die
 
 # Setup corrupt somehow...
 setup_bad:

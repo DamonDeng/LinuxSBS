@@ -2,7 +2,11 @@ Copy Linux step by step.
 
 In order to learn Linux kernel, I decided to copy Linux source code step by step. And try to build and run it at each step, so that I can understand each part of Linux kernel.
 
-It is 0.0.2 version
+It is 0.0.3 version
+#--------0.0.3
+Now main.c is starting to work, print some messages with c program.
+Inorder to call the function puts(), we add tty.c regs.c bioscall.S
+
 #--------0.0.2
 In this version, we still have the MBR in image, which is uselless just like the MBR in linux image, telling user that it is not supported anymore to load linux directlly.
 
@@ -26,5 +30,5 @@ That is all we have now.
 
 #--------0.0.1
 Just copied first sector of header.S in arch/x86/boot.
-Make it be able to boot from floppy disk and display some message.
+Make it be able to boot from floppy disk and display some messages.
 
